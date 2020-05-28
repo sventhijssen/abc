@@ -17,13 +17,14 @@
   Revision    [$Id: abcShow.c,v 1.00 2005/06/20 00:00:00 alanmi Exp $]
 
 ***********************************************************************/
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifdef WIN32
 #include <process.h> 
 #else
 #include <unistd.h>
 #endif
-
 
 #include "abc.h"
 #include "base/main/main.h"
@@ -71,6 +72,20 @@ void Abc_NodeShowBddOne( DdManager * dd, DdNode * bFunc )
     }
     Cudd_DumpDot( dd, 1, (DdNode **)&bFunc, NULL, NULL, pFile );
     fclose( pFile );
+
+
+    fprintf( stdout, "Abc_NodeShowBddOne\n");
+
+    char * FileNameDotCopy = "copy.dot";
+    FILE * pFileCopy;
+    if ( (pFileCopy = fopen( FileNameDotCopy, "w" )) == NULL )
+    {
+        fprintf( stdout, "Cannot open the intermediate file \"%s\".\n", FileNameDot );
+        return;
+    }
+    Cudd_DumpDot( dd, 1, (DdNode **)&bFunc, NULL, NULL, pFileCopy );
+    fclose( pFileCopy );
+
     Abc_ShowFile( FileNameDot );
 }
 
@@ -87,6 +102,9 @@ void Abc_NodeShowBddOne( DdManager * dd, DdNode * bFunc )
 ***********************************************************************/
 void Abc_NodeShowBdd( Abc_Obj_t * pNode, int fCompl )
 {
+
+    fprintf( stdout, "Abc_NodeShowBdd\n");
+
     FILE * pFile;
     Vec_Ptr_t * vNamesIn;
     char FileNameDot[200];
@@ -117,6 +135,33 @@ void Abc_NodeShowBdd( Abc_Obj_t * pNode, int fCompl )
     Abc_NodeFreeNames( vNamesIn );
     Abc_NtkCleanCopy( pNode->pNtk );
     fclose( pFile );
+
+    // BEGIN COPY //
+    // Source: https://codeforwin.org/2018/02/c-program-to-copy-file.html
+    FILE *sourceFile;
+    FILE *destFile;
+
+    char ch;
+
+    sourceFile = fopen(FileNameDot, "r");
+    destFile = fopen("copy.dot", "w");
+
+    fprintf( stdout, "Intermediate file \"%s\".\n", FileNameDot );
+
+    ch = fgetc(sourceFile);
+    while (ch != EOF)
+    {
+        /* Write to destination file */
+        fputc(ch, destFile);
+
+        /* Read next character from source file */
+        ch = fgetc(sourceFile);
+    }
+
+    fclose(sourceFile);
+    fclose(destFile);
+
+    // END COPY //
 
     // visualize the file 
     Abc_ShowFile( FileNameDot );

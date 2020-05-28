@@ -71,23 +71,27 @@ char * Abc_UtilsGetUsersInput( Abc_Frame_t * pAbc )
 {
     static char Prompt[5000];
     sprintf( Prompt, "abc %02d> ", pAbc->nSteps );
-#ifdef ABC_USE_READLINE
-    {
-    static char * line = NULL;
-    if (line != NULL) ABC_FREE(line);
-    line = readline(Prompt);  
-    if (line == NULL){ printf("***EOF***\n"); exit(0); }
-    add_history(line);
-    return line;
-    }
-#else
-    {
+// #ifdef ABC_USE_READLINE
+//     {
+//     static char * line = NULL;
+//     if (line != NULL) ABC_FREE(line);
+//     line = readline(Prompt);  
+//     if (line == NULL){ printf("***EOF***\n"); exit(0); }
+//     add_history(line);
+//     return line;
+//     }
+// #else
+//     {
+//     char * pRetValue;
+//     fprintf( pAbc->Out, "%s", Prompt );
+//     pRetValue = fgets( Prompt, 5000, stdin );
+//     return Prompt;
+//     }
+// #endif
     char * pRetValue;
     fprintf( pAbc->Out, "%s", Prompt );
     pRetValue = fgets( Prompt, 5000, stdin );
     return Prompt;
-    }
-#endif
 }
 
 /**Function*************************************************************
